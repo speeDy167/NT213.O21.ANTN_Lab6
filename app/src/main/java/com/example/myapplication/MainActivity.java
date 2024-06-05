@@ -4,62 +4,62 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView Error;
-    EditText Username;
-    EditText Password;
-    Button Login;
-    TextView Registration;
-    SQLiteConnector db;
+    private TextView welcomeTextView;
+    private Button logoutButton;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener authListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Username = (EditText) findViewById(R.id.username);
-        Password = (EditText) findViewById(R.id.password);
-        Login = (Button) findViewById(R.id.loginbtn);
-        Error = (TextView) findViewById(R.id.error); // Initialize here
-        db = new SQLiteConnector(this); // Assuming you have a constructor
+        welcomeTextView = findViewById(R.id.welcomeTextView);
+        logoutButton = findViewById(R.id.logoutButton);
 
-        Login.setOnClickListener(new View.OnClickListener() {
+        mAuth = FirebaseAuth.getInstance();
+
+        authListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onClick(View v) {
-                String username = Username.getText().toString().trim();
-                String password = Password.getText().toString().trim();
-                try {
-                    boolean res = db.checkUserSignIn(username, password);
-                    if (res) {
-                        Intent login = new Intent(MainActivity.this, HomeScreen.class);
-                        startActivity(login);
-                    } else {
-                        Error.setText("Invalid Username or Password");
-                    }
-                } catch (Exception e) {
-                    Error.setText("Error logging in. Please try again.");
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null) {
+                    startActivity(new Intent(MainActivity.this, Login.class));
+                    finish();
+                } else {
+                    welcomeTextView.setText("Welcome, " + user.getEmail());
                 }
             }
-        });
+        };
 
-        Registration = (TextView) findViewById(R.id.registration);
-        Registration.setOnClickListener(new View.OnClickListener() {
+        logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openRegistrationActivity();
+                mAuth.signOut();
             }
         });
     }
 
-    private void openRegistrationActivity() {
-        Intent registration = new Intent(MainActivity.this, Registration.class);
-        startActivity(registration);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(authListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authListener != null) {
+            mAuth.removeAuthStateListener(authListener);
+        }
     }
 }

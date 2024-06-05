@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "39568803307",
+    "project_id": "nt213-o21-antn",
+    "storage_bucket": "nt213-o21-antn.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39568803307:android:957399137dba2cef0845ae",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLBXvdrR2lTx2hMzLN5Oqlr603TiJEvxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
