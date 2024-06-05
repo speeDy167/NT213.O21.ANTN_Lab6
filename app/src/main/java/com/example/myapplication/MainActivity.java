@@ -1,20 +1,14 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.net.nsd.NsdManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,18 +17,18 @@ public class MainActivity extends AppCompatActivity {
     EditText Password;
     Button Login;
     TextView Registration;
-    DatabaseHelper db;
+    SQLiteConnector db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
         Username = (EditText) findViewById(R.id.username);
         Password = (EditText) findViewById(R.id.password);
         Login = (Button) findViewById(R.id.loginbtn);
         Error = (TextView) findViewById(R.id.error); // Initialize here
-        db = new DatabaseHelper(this); // Assuming you have a constructor
+        db = new SQLiteConnector(this); // Assuming you have a constructor
 
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 String username = Username.getText().toString().trim();
                 String password = Password.getText().toString().trim();
                 try {
-                    boolean res = db.checkUserLogin(username, password);
+                    boolean res = db.checkUserSignIn(username, password);
                     if (res) {
                         Intent login = new Intent(MainActivity.this, HomeScreen.class);
                         startActivity(login);
@@ -63,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     private void openRegistrationActivity() {
         Intent registration = new Intent(MainActivity.this, Registration.class);
         startActivity(registration);
